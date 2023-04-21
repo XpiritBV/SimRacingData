@@ -272,7 +272,7 @@
     <ClCompile Include="..\Source\Example.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\..\rFactorSource\Include\InternalsPlugin.hpp" />
+    <ClInclude Include="..\Include\InternalsPlugin.hpp" />
     <ClInclude Include="..\Include\Example.hpp" />
     <ClInclude Include="..\Include\PluginObjects.hpp" />
   </ItemGroup>
