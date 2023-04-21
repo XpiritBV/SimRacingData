@@ -92,7 +92,6 @@
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -259,7 +258,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(Platform)\$(Configuration)\InternalsPlugin.pdb</ProgramDatabaseFile>
       <ImportLibrary>$(Platform)\$(Configuration)\InternalsPlugin.lib</ImportLibrary>
-      <AdditionalLibraryDirectories>C:\src\SimRacingData\rF2 Example Plugin\VC11\packages;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -274,10 +273,11 @@
     <ClCompile Include="..\Source\Example.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Include\InternalsPlugin.hpp" />
+    <ClInclude Include="..\..\..\..\..\..\rFactorSource\Include\InternalsPlugin.hpp" />
     <ClInclude Include="..\Include\Example.hpp" />
     <ClInclude Include="..\Include\PluginObjects.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
 </Project>

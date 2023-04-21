@@ -14,17 +14,13 @@
 
 #include "Example.hpp"          // corresponding header file
 #include <math.h>               // for atan2, sqrt
-#include <stdio.h>              // for sample output
+//#include <stdio.h>              // for sample output
+
+#include <cstdio>              // for sample output
 
 #include <cstdlib> // for rand() and srand()
 #include <ctime>   // for time()
-
-//#include <iomanip>
-//#include <chrono>
-//#include <fstream>
-//#include <sstream>
-//#include <iostream>
-//#include <ctime>
+#include <string>
 
 // plugin information
 
@@ -297,79 +293,16 @@ bool ExampleInternalsPlugin::ForceFeedback(double& forceValue)
 
 void ExampleInternalsPlugin::UpdateScoring(const ScoringInfoV01& info)
 {
-	//const std::string TOPIC{ "hello" };
-	//const std::string PAYLOAD1{ "Hello World!" };
+	//std::srand(std::time(nullptr));
+	//// Generate a random number between 0 and 99
+	//int random_number = std::rand() % 100;
 
-	//const char* PAYLOAD2 = "Hi there!";
-
-	// Create a MQTT client
-
-	//mqtt::client cli(ADDRESS, CLIENT_ID);
-
-	//mqtt::connect_options connOpts;
-	//connOpts.set_keep_alive_interval(20);
-	//connOpts.set_clean_session(true);
-
-	//try {
-	//	// Connect to the client
-
-	//	cli.connect(connOpts);
-
-	//	// Publish using a message pointer.
-
-	//	auto msg = mqtt::make_message(TOPIC, PAYLOAD1);
-	//	msg->set_qos(QOS);
-
-	//	cli.publish(msg);
-
-	//	// Now try with itemized publish.
-
-	//	cli.publish(TOPIC, PAYLOAD2, strlen(PAYLOAD2), 0, false);
-
-	//	// Disconnect
-
-	//	cli.disconnect();
-	//}
-	//catch (const mqtt::exception& exc) {
-	//	std::cerr << "Error: " << exc.what() << " ["
-	//		<< exc.get_reason_code() << "]" << std::endl;
-	//}
-
-
-	// create a RapidJSON document to hold the JSON object
-	//Document document;
-	//document.SetObject();
-
-	//// Add the information to the document
-	////document.AddMember("TrackName", Value().SetString(scoringInfo.mTrackName, 64), document.GetAllocator());
-	//document.AddMember("TrackName", info.mTrackName, document.GetAllocator());
-	//document.AddMember("Session", info.mSession, document.GetAllocator());
-
-	//// Create a JSON string from the document
-	//StringBuffer buffer;
-	//Writer<StringBuffer> writer(buffer);
-	//document.Accept(writer);
-	//std::string json = buffer.GetString();
-
-	// Write the JSON string to a file
-	/*std::ofstream file("test.json");
-	if (file.is_open()) {
-		file << json;
-		file.close();
-		std::cout << "Data written to file." << std::endl;
-	}
-	else {
-		std::cout << "Unable to open file for writing." << std::endl;
-	}*/
-
-	
-	std::srand(std::time(nullptr));
-	// Generate a random number between 0 and 99
-	int random_number = std::rand() % 100;
-	auto filename = random_number + ".txt";
+	//std::string filename = std::to_string(info.mCurrentET) + ".txt";
+	char myCharArray[32];
+	sprintf(myCharArray, "%.6f", info.mCurrentET);
 
 	// Note: function is called twice per second now (instead of once per second in previous versions)
-	FILE* fo = fopen(filename, "a");
+	FILE* fo = fopen(myCharArray, "a");
 	if (fo != NULL)
 	{
 		// Print general scoring info
@@ -395,16 +328,6 @@ void ExampleInternalsPlugin::UpdateScoring(const ScoringInfoV01& info)
 		// Print vehicle info
 		for (long i = 0; i < info.mNumVehicles; ++i)
 		{
-		    
-
-			// Create filename with timestamp
-			/*auto now = std::chrono::system_clock::now();
-			auto now_time_t = std::chrono::system_clock::to_time_t(now);
-			std::stringstream timestamp_stream;
-			timestamp_stream << std::put_time(std::localtime(&now_time_t), "%Y-%m-%d_%H-%M-%S");
-			std::string timestamp = timestamp_stream.str();
-			std::string filename = timestamp + ".json";*/
-
 			VehicleScoringInfoV01& vinfo = info.mVehicle[i];
 			fprintf(fo, "Driver %d: %s\n", i, vinfo.mDriverName);
 			fprintf(fo, " ID=%d Vehicle=%s\n", vinfo.mID, vinfo.mVehicleName);

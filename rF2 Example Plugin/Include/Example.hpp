@@ -23,7 +23,7 @@
 
 
 // This is used for the app to use the plugin for its intended purpose
-class ExampleInternalsPlugin : public InternalsPluginV01  // REMINDER: exported function GetPluginVersion() should return 1 if you are deriving from this InternalsPluginV01, 2 for InternalsPluginV02, etc.
+class ExampleInternalsPlugin : public InternalsPluginV07  // REMINDER: exported function GetPluginVersion() should return 1 if you are deriving from this InternalsPluginV01, 2 for InternalsPluginV02, etc.
 {
 
  public:
@@ -64,7 +64,7 @@ class ExampleInternalsPlugin : public InternalsPluginV01  // REMINDER: exported 
   bool ForceFeedback( double &forceValue );  // SEE FUNCTION BODY TO ENABLE FORCE EXAMPLE
 
   // SCORING OUTPUT
-  bool WantsScoringUpdates() { return( false ); } // CHANGE TO TRUE TO ENABLE SCORING EXAMPLE!
+  bool WantsScoringUpdates() { return( true ); } // CHANGE TO TRUE TO ENABLE SCORING EXAMPLE!
   void UpdateScoring( const ScoringInfoV01 &info );
 
   // COMMENTARY INPUT
