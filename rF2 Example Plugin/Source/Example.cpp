@@ -17,12 +17,15 @@
 #include <stdio.h>              // for sample output
 
 // Include the RapidJSON library and dependencies
-#include <iostream>
+#include <chrono>
+#include <ctime>
 #include <fstream>
+#include <iostream>
+#include <iomanip>
+#include <sstream>
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
-
 using namespace rapidjson;
 
 // plugin information
@@ -296,6 +299,14 @@ bool ExampleInternalsPlugin::ForceFeedback(double& forceValue)
 
 void ExampleInternalsPlugin::UpdateScoring(const ScoringInfoV01& info)
 {
+	// Create filename with timestamp
+	auto now = std::chrono::system_clock::now();
+	auto now_time_t = std::chrono::system_clock::to_time_t(now);
+	std::stringstream timestamp_stream;
+	timestamp_stream << std::put_time(std::localtime(&now_time_t), "%Y-%m-%d_%H-%M-%S");
+	std::string timestamp = timestamp_stream.str();
+	std::string filename = timestamp + ".json";
+
 	// create a RapidJSON document to hold the JSON object
 	Document document;
 	document.SetObject();
@@ -305,7 +316,23 @@ void ExampleInternalsPlugin::UpdateScoring(const ScoringInfoV01& info)
 	document.AddMember("TrackName", info.mTrackName, document.GetAllocator());
 	document.AddMember("Session", info.mSession, document.GetAllocator());
 
-	// Write the document to a file
+	// Create a JSON string from the document
+	StringBuffer buffer;
+	Writer<StringBuffer> writer(buffer);
+	document.Accept(writer);
+	std::string json = buffer.GetString();
+
+	// Write the JSON string to a file
+	std::ofstream file(filename);
+	if (file.is_open()) {
+		file << json;
+		file.close();
+		std::cout << "Data written to file." << std::endl;
+	}
+	else {
+		std::cout << "Unable to open file for writing." << std::endl;
+	}
+
 	
 	
 
