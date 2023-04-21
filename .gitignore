@@ -34,3 +34,5 @@
 
 # Visual Studio
 *.vs
+
+.InternalsPlugin.vcxproj.user
