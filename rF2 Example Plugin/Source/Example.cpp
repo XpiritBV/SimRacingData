@@ -16,17 +16,14 @@
 #include <math.h>               // for atan2, sqrt
 #include <stdio.h>              // for sample output
 
-// Include the RapidJSON library and dependencies
-#include <chrono>
-#include <ctime>
-#include <fstream>
-#include <iostream>
-#include <iomanip>
-#include <sstream>
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
-using namespace rapidjson;
+#include <random>
+
+//#include <iomanip>
+//#include <chrono>
+//#include <fstream>
+//#include <sstream>
+//#include <iostream>
+//#include <ctime>
 
 // plugin information
 
@@ -37,7 +34,7 @@ extern "C" __declspec(dllexport)
 PluginObjectType __cdecl GetPluginType() { return(PO_INTERNALS); }
 
 extern "C" __declspec(dllexport)
-int __cdecl GetPluginVersion() { return(1); } // InternalsPluginV01 functionality (if you change this return value, you must derive from the appropriate class!)
+int __cdecl GetPluginVersion() { return(7); } // InternalsPluginV01 functionality (if you change this return value, you must derive from the appropriate class!)
 
 extern "C" __declspec(dllexport)
 PluginObject * __cdecl CreatePluginObject() { return((PluginObject*) new ExampleInternalsPlugin); }
@@ -299,31 +296,62 @@ bool ExampleInternalsPlugin::ForceFeedback(double& forceValue)
 
 void ExampleInternalsPlugin::UpdateScoring(const ScoringInfoV01& info)
 {
-	// Create filename with timestamp
-	auto now = std::chrono::system_clock::now();
-	auto now_time_t = std::chrono::system_clock::to_time_t(now);
-	std::stringstream timestamp_stream;
-	timestamp_stream << std::put_time(std::localtime(&now_time_t), "%Y-%m-%d_%H-%M-%S");
-	std::string timestamp = timestamp_stream.str();
-	std::string filename = timestamp + ".json";
+	//const std::string TOPIC{ "hello" };
+	//const std::string PAYLOAD1{ "Hello World!" };
+
+	//const char* PAYLOAD2 = "Hi there!";
+
+	// Create a MQTT client
+
+	//mqtt::client cli(ADDRESS, CLIENT_ID);
+
+	//mqtt::connect_options connOpts;
+	//connOpts.set_keep_alive_interval(20);
+	//connOpts.set_clean_session(true);
+
+	//try {
+	//	// Connect to the client
+
+	//	cli.connect(connOpts);
+
+	//	// Publish using a message pointer.
+
+	//	auto msg = mqtt::make_message(TOPIC, PAYLOAD1);
+	//	msg->set_qos(QOS);
+
+	//	cli.publish(msg);
+
+	//	// Now try with itemized publish.
+
+	//	cli.publish(TOPIC, PAYLOAD2, strlen(PAYLOAD2), 0, false);
+
+	//	// Disconnect
+
+	//	cli.disconnect();
+	//}
+	//catch (const mqtt::exception& exc) {
+	//	std::cerr << "Error: " << exc.what() << " ["
+	//		<< exc.get_reason_code() << "]" << std::endl;
+	//}
+
 
 	// create a RapidJSON document to hold the JSON object
-	Document document;
-	document.SetObject();
+	//Document document;
+	//document.SetObject();
 
-	// Add the information to the document
-	//document.AddMember("TrackName", Value().SetString(scoringInfo.mTrackName, 64), document.GetAllocator());
-	document.AddMember("TrackName", info.mTrackName, document.GetAllocator());
-	document.AddMember("Session", info.mSession, document.GetAllocator());
+	//// Add the information to the document
+	////document.AddMember("TrackName", Value().SetString(scoringInfo.mTrackName, 64), document.GetAllocator());
+	//document.AddMember("TrackName", info.mTrackName, document.GetAllocator());
+	//document.AddMember("Session", info.mSession, document.GetAllocator());
 
-	// Create a JSON string from the document
-	StringBuffer buffer;
-	Writer<StringBuffer> writer(buffer);
-	document.Accept(writer);
-	std::string json = buffer.GetString();
+	//// Create a JSON string from the document
+	//StringBuffer buffer;
+	//Writer<StringBuffer> writer(buffer);
+	//document.Accept(writer);
+	//std::string json = buffer.GetString();
 
 	// Write the JSON string to a file
-	std::ofstream file(filename);
+	/*std::ofstream file("test.json");
 	if (file.is_open()) {
 		file << json;
 		file.close();
@@ -331,73 +359,83 @@ void ExampleInternalsPlugin::UpdateScoring(const ScoringInfoV01& info)
 	}
 	else {
 		std::cout << "Unable to open file for writing." << std::endl;
+	}*/
+
+	
+	
+
+	// Note: function is called twice per second now (instead of once per second in previous versions)
+	FILE* fo = fopen("ExampleInternalsScoringOutput.txt", "a");
+	if (fo != NULL)
+	{
+		// Print general scoring info
+		fprintf(fo, "TrackName=%s\n", info.mTrackName);
+		fprintf(fo, "Session=%d NumVehicles=%d CurET=%.3f\n", info.mSession, info.mNumVehicles, info.mCurrentET);
+		fprintf(fo, "EndET=%.3f MaxLaps=%d LapDist=%.1f\n", info.mEndET, info.mMaxLaps, info.mLapDist);
+
+		// Note that only one plugin can use the stream (by enabling scoring updates) ... sorry if any clashes result
+		fprintf(fo, "START STREAM\n");
+		const char* ptr = info.mResultsStream;
+		while (*ptr != NULL)
+			fputc(*ptr++, fo);
+		fprintf(fo, "END STREAM\n");
+
+		// New version 2 stuff
+		fprintf(fo, "GamePhase=%d YellowFlagState=%d SectorFlags=(%d,%d,%d)\n", info.mGamePhase, info.mYellowFlagState,
+			info.mSectorFlag[0], info.mSectorFlag[1], info.mSectorFlag[2]);
+		fprintf(fo, "InRealtime=%d StartLight=%d NumRedLights=%d\n", info.mInRealtime, info.mStartLight, info.mNumRedLights);
+		fprintf(fo, "PlayerName=%s PlrFileName=%s\n", info.mPlayerName, info.mPlrFileName);
+		fprintf(fo, "DarkCloud=%.2f Raining=%.2f AmbientTemp=%.1f TrackTemp=%.1f\n", info.mDarkCloud, info.mRaining, info.mAmbientTemp, info.mTrackTemp);
+		fprintf(fo, "Wind=(%.1f,%.1f,%.1f) MinPathWetness=%.2f MaxPathWetness=%.2f\n", info.mWind.x, info.mWind.y, info.mWind.z, info.mMinPathWetness, info.mMaxPathWetness);
+
+		// Print vehicle info
+		for (long i = 0; i < info.mNumVehicles; ++i)
+		{
+			
+			// Create filename with timestamp
+			/*auto now = std::chrono::system_clock::now();
+			auto now_time_t = std::chrono::system_clock::to_time_t(now);
+			std::stringstream timestamp_stream;
+			timestamp_stream << std::put_time(std::localtime(&now_time_t), "%Y-%m-%d_%H-%M-%S");
+			std::string timestamp = timestamp_stream.str();
+			std::string filename = timestamp + ".json";*/
+
+
+			VehicleScoringInfoV01& vinfo = info.mVehicle[i];
+			fprintf(fo, "Driver %d: %s\n", i, vinfo.mDriverName);
+			fprintf(fo, " ID=%d Vehicle=%s\n", vinfo.mID, vinfo.mVehicleName);
+			fprintf(fo, " Laps=%d Sector=%d FinishStatus=%d\n", vinfo.mTotalLaps, vinfo.mSector, vinfo.mFinishStatus);
+			fprintf(fo, " LapDist=%.1f PathLat=%.2f RelevantTrackEdge=%.2f\n", vinfo.mLapDist, vinfo.mPathLateral, vinfo.mTrackEdge);
+			fprintf(fo, " Best=(%.3f, %.3f, %.3f)\n", vinfo.mBestSector1, vinfo.mBestSector2, vinfo.mBestLapTime);
+			fprintf(fo, " Last=(%.3f, %.3f, %.3f)\n", vinfo.mLastSector1, vinfo.mLastSector2, vinfo.mLastLapTime);
+			fprintf(fo, " Current Sector 1 = %.3f, Current Sector 2 = %.3f\n", vinfo.mCurSector1, vinfo.mCurSector2);
+			fprintf(fo, " Pitstops=%d, Penalties=%d\n", vinfo.mNumPitstops, vinfo.mNumPenalties);
+
+			// New version 2 stuff
+			fprintf(fo, " IsPlayer=%d Control=%d InPits=%d LapStartET=%.3f\n", vinfo.mIsPlayer, vinfo.mControl, vinfo.mInPits, vinfo.mLapStartET);
+			fprintf(fo, " Place=%d VehicleClass=%s\n", vinfo.mPlace, vinfo.mVehicleClass);
+			fprintf(fo, " TimeBehindNext=%.3f LapsBehindNext=%d\n", vinfo.mTimeBehindNext, vinfo.mLapsBehindNext);
+			fprintf(fo, " TimeBehindLeader=%.3f LapsBehindLeader=%d\n", vinfo.mTimeBehindLeader, vinfo.mLapsBehindLeader);
+			fprintf(fo, " Pos=(%.3f,%.3f,%.3f)\n", vinfo.mPos.x, vinfo.mPos.y, vinfo.mPos.z);
+
+			// Forward is roughly in the -z direction (although current pitch of car may cause some y-direction velocity)
+			fprintf(fo, " LocalVel=(%.2f,%.2f,%.2f)\n", vinfo.mLocalVel.x, vinfo.mLocalVel.y, vinfo.mLocalVel.z);
+			fprintf(fo, " LocalAccel=(%.1f,%.1f,%.1f)\n", vinfo.mLocalAccel.x, vinfo.mLocalAccel.y, vinfo.mLocalAccel.z);
+
+			// Orientation matrix is left-handed
+			fprintf(fo, " [%6.3f,%6.3f,%6.3f]\n", vinfo.mOri[0].x, vinfo.mOri[0].y, vinfo.mOri[0].z);
+			fprintf(fo, " [%6.3f,%6.3f,%6.3f]\n", vinfo.mOri[1].x, vinfo.mOri[1].y, vinfo.mOri[1].z);
+			fprintf(fo, " [%6.3f,%6.3f,%6.3f]\n", vinfo.mOri[2].x, vinfo.mOri[2].y, vinfo.mOri[2].z);
+			fprintf(fo, " LocalRot=(%.3f,%.3f,%.3f)\n", vinfo.mLocalRot.x, vinfo.mLocalRot.y, vinfo.mLocalRot.z);
+			fprintf(fo, " LocalRotAccel=(%.2f,%.2f,%.2f)\n", vinfo.mLocalRotAccel.x, vinfo.mLocalRotAccel.y, vinfo.mLocalRotAccel.z);
+		}
+
+		// Delimit sections
+		fprintf(fo, "\n");
+
+		// Close file
+		fclose(fo);
 	}
-
-	
-	
-
-	//// Note: function is called twice per second now (instead of once per second in previous versions)
-	//FILE* fo = fopen("ExampleInternalsScoringOutput.txt", "a");
-	//if (fo != NULL)
-	//{
-	//	// Print general scoring info
-	//	fprintf(fo, "TrackName=%s\n", info.mTrackName);
-	//	fprintf(fo, "Session=%d NumVehicles=%d CurET=%.3f\n", info.mSession, info.mNumVehicles, info.mCurrentET);
-	//	fprintf(fo, "EndET=%.3f MaxLaps=%d LapDist=%.1f\n", info.mEndET, info.mMaxLaps, info.mLapDist);
-
-	//	// Note that only one plugin can use the stream (by enabling scoring updates) ... sorry if any clashes result
-	//	fprintf(fo, "START STREAM\n");
-	//	const char* ptr = info.mResultsStream;
-	//	while (*ptr != NULL)
-	//		fputc(*ptr++, fo);
-	//	fprintf(fo, "END STREAM\n");
-
-	//	// New version 2 stuff
-	//	fprintf(fo, "GamePhase=%d YellowFlagState=%d SectorFlags=(%d,%d,%d)\n", info.mGamePhase, info.mYellowFlagState,
-	//		info.mSectorFlag[0], info.mSectorFlag[1], info.mSectorFlag[2]);
-	//	fprintf(fo, "InRealtime=%d StartLight=%d NumRedLights=%d\n", info.mInRealtime, info.mStartLight, info.mNumRedLights);
-	//	fprintf(fo, "PlayerName=%s PlrFileName=%s\n", info.mPlayerName, info.mPlrFileName);
-	//	fprintf(fo, "DarkCloud=%.2f Raining=%.2f AmbientTemp=%.1f TrackTemp=%.1f\n", info.mDarkCloud, info.mRaining, info.mAmbientTemp, info.mTrackTemp);
-	//	fprintf(fo, "Wind=(%.1f,%.1f,%.1f) MinPathWetness=%.2f MaxPathWetness=%.2f\n", info.mWind.x, info.mWind.y, info.mWind.z, info.mMinPathWetness, info.mMaxPathWetness);
-
-	//	// Print vehicle info
-	//	for (long i = 0; i < info.mNumVehicles; ++i)
-	//	{
-	//		VehicleScoringInfoV01& vinfo = info.mVehicle[i];
-	//		fprintf(fo, "Driver %d: %s\n", i, vinfo.mDriverName);
-	//		fprintf(fo, " ID=%d Vehicle=%s\n", vinfo.mID, vinfo.mVehicleName);
-	//		fprintf(fo, " Laps=%d Sector=%d FinishStatus=%d\n", vinfo.mTotalLaps, vinfo.mSector, vinfo.mFinishStatus);
-	//		fprintf(fo, " LapDist=%.1f PathLat=%.2f RelevantTrackEdge=%.2f\n", vinfo.mLapDist, vinfo.mPathLateral, vinfo.mTrackEdge);
-	//		fprintf(fo, " Best=(%.3f, %.3f, %.3f)\n", vinfo.mBestSector1, vinfo.mBestSector2, vinfo.mBestLapTime);
-	//		fprintf(fo, " Last=(%.3f, %.3f, %.3f)\n", vinfo.mLastSector1, vinfo.mLastSector2, vinfo.mLastLapTime);
-	//		fprintf(fo, " Current Sector 1 = %.3f, Current Sector 2 = %.3f\n", vinfo.mCurSector1, vinfo.mCurSector2);
-	//		fprintf(fo, " Pitstops=%d, Penalties=%d\n", vinfo.mNumPitstops, vinfo.mNumPenalties);
-
-	//		// New version 2 stuff
-	//		fprintf(fo, " IsPlayer=%d Control=%d InPits=%d LapStartET=%.3f\n", vinfo.mIsPlayer, vinfo.mControl, vinfo.mInPits, vinfo.mLapStartET);
-	//		fprintf(fo, " Place=%d VehicleClass=%s\n", vinfo.mPlace, vinfo.mVehicleClass);
-	//		fprintf(fo, " TimeBehindNext=%.3f LapsBehindNext=%d\n", vinfo.mTimeBehindNext, vinfo.mLapsBehindNext);
-	//		fprintf(fo, " TimeBehindLeader=%.3f LapsBehindLeader=%d\n", vinfo.mTimeBehindLeader, vinfo.mLapsBehindLeader);
-	//		fprintf(fo, " Pos=(%.3f,%.3f,%.3f)\n", vinfo.mPos.x, vinfo.mPos.y, vinfo.mPos.z);
-
-	//		// Forward is roughly in the -z direction (although current pitch of car may cause some y-direction velocity)
-	//		fprintf(fo, " LocalVel=(%.2f,%.2f,%.2f)\n", vinfo.mLocalVel.x, vinfo.mLocalVel.y, vinfo.mLocalVel.z);
-	//		fprintf(fo, " LocalAccel=(%.1f,%.1f,%.1f)\n", vinfo.mLocalAccel.x, vinfo.mLocalAccel.y, vinfo.mLocalAccel.z);
-
-	//		// Orientation matrix is left-handed
-	//		fprintf(fo, " [%6.3f,%6.3f,%6.3f]\n", vinfo.mOri[0].x, vinfo.mOri[0].y, vinfo.mOri[0].z);
-	//		fprintf(fo, " [%6.3f,%6.3f,%6.3f]\n", vinfo.mOri[1].x, vinfo.mOri[1].y, vinfo.mOri[1].z);
-	//		fprintf(fo, " [%6.3f,%6.3f,%6.3f]\n", vinfo.mOri[2].x, vinfo.mOri[2].y, vinfo.mOri[2].z);
-	//		fprintf(fo, " LocalRot=(%.3f,%.3f,%.3f)\n", vinfo.mLocalRot.x, vinfo.mLocalRot.y, vinfo.mLocalRot.z);
-	//		fprintf(fo, " LocalRotAccel=(%.2f,%.2f,%.2f)\n", vinfo.mLocalRotAccel.x, vinfo.mLocalRotAccel.y, vinfo.mLocalRotAccel.z);
-	//	}
-
-	//	// Delimit sections
-	//	fprintf(fo, "\n");
-
-	//	// Close file
-	//	fclose(fo);
-	//}
 }
 
 
