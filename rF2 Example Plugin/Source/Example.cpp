@@ -16,7 +16,8 @@
 #include <math.h>               // for atan2, sqrt
 #include <stdio.h>              // for sample output
 
-#include <random>
+#include <cstdlib> // for rand() and srand()
+#include <ctime>   // for time()
 
 //#include <iomanip>
 //#include <chrono>
@@ -362,10 +363,13 @@ void ExampleInternalsPlugin::UpdateScoring(const ScoringInfoV01& info)
 	}*/
 
 	
-	
+	std::srand(std::time(nullptr));
+	// Generate a random number between 0 and 99
+	int random_number = std::rand() % 100;
+	auto filename = random_number + ".txt";
 
 	// Note: function is called twice per second now (instead of once per second in previous versions)
-	FILE* fo = fopen("ExampleInternalsScoringOutput.txt", "a");
+	FILE* fo = fopen(filename, "a");
 	if (fo != NULL)
 	{
 		// Print general scoring info
@@ -391,7 +395,8 @@ void ExampleInternalsPlugin::UpdateScoring(const ScoringInfoV01& info)
 		// Print vehicle info
 		for (long i = 0; i < info.mNumVehicles; ++i)
 		{
-			
+		    
+
 			// Create filename with timestamp
 			/*auto now = std::chrono::system_clock::now();
 			auto now_time_t = std::chrono::system_clock::to_time_t(now);
