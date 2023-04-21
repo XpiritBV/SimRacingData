@@ -1,5 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using Classes;
 using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 
 Console.WriteLine("Hello, World!");
 
@@ -18,7 +20,7 @@ if(folderPath == null)
 var directory = new DirectoryInfo(folderPath);
 
 DateTime oldestTime = DateTime.MaxValue;
-FileInfo oldestFile = null;
+FileInfo? oldestFile = null;
 
 var files = directory.EnumerateFiles();
 foreach (var file in files)
@@ -29,5 +31,18 @@ foreach (var file in files)
         oldestFile = file;
     }
 }
+
+if(oldestFile == null)
+{
+    throw new InvalidOperationException($"{nameof(oldestFile)} is null.");
+}
+
+var contentString = File.ReadAllText(oldestFile.FullName);
+if(contentString == null)
+{
+    throw new InvalidOperationException($"{nameof(contentString)} is null.");
+}
+var element = JsonSerializer.Deserialize<RootObject>(contentString);
+
 
 
