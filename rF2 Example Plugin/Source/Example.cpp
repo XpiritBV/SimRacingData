@@ -16,7 +16,7 @@
 #include <math.h>               // for atan2, sqrt
 #include <stdio.h>              // for sample output
 
-#include <random>
+#include <ctime>
 
 //#include <iomanip>
 //#include <chrono>
@@ -399,7 +399,6 @@ void ExampleInternalsPlugin::UpdateScoring(const ScoringInfoV01& info)
 			timestamp_stream << std::put_time(std::localtime(&now_time_t), "%Y-%m-%d_%H-%M-%S");
 			std::string timestamp = timestamp_stream.str();
 			std::string filename = timestamp + ".json";*/
-
 
 			VehicleScoringInfoV01& vinfo = info.mVehicle[i];
 			fprintf(fo, "Driver %d: %s\n", i, vinfo.mDriverName);
