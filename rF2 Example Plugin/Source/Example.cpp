@@ -405,7 +405,6 @@ void ExampleInternalsPlugin::UpdateScoring(const ScoringInfoV01& info)
 			std::string timestamp = timestamp_stream.str();
 			std::string filename = timestamp + ".json";*/
 
-
 			VehicleScoringInfoV01& vinfo = info.mVehicle[i];
 			fprintf(fo, "Driver %d: %s\n", i, vinfo.mDriverName);
 			fprintf(fo, " ID=%d Vehicle=%s\n", vinfo.mID, vinfo.mVehicleName);
