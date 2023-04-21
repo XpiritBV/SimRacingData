@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "InternalsPlugin", "Internal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aggregator", "..\Aggregator\Aggregator.csproj", "{E1569CA8-178B-4CAF-B625-0BADB26036BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Classes", "..\Classes\Classes.csproj", "{2B1E2B0B-DAC6-45D5-B355-7A924C78B568}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,8 +43,23 @@ Global
 		{E1569CA8-178B-4CAF-B625-0BADB26036BD}.Release|Win32.Build.0 = Release|Any CPU
 		{E1569CA8-178B-4CAF-B625-0BADB26036BD}.Release|x64.ActiveCfg = Release|Any CPU
 		{E1569CA8-178B-4CAF-B625-0BADB26036BD}.Release|x64.Build.0 = Release|Any CPU
+		{2B1E2B0B-DAC6-45D5-B355-7A924C78B568}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B1E2B0B-DAC6-45D5-B355-7A924C78B568}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B1E2B0B-DAC6-45D5-B355-7A924C78B568}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{2B1E2B0B-DAC6-45D5-B355-7A924C78B568}.Debug|Win32.Build.0 = Debug|Any CPU
+		{2B1E2B0B-DAC6-45D5-B355-7A924C78B568}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2B1E2B0B-DAC6-45D5-B355-7A924C78B568}.Debug|x64.Build.0 = Debug|Any CPU
+		{2B1E2B0B-DAC6-45D5-B355-7A924C78B568}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B1E2B0B-DAC6-45D5-B355-7A924C78B568}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B1E2B0B-DAC6-45D5-B355-7A924C78B568}.Release|Win32.ActiveCfg = Release|Any CPU
+		{2B1E2B0B-DAC6-45D5-B355-7A924C78B568}.Release|Win32.Build.0 = Release|Any CPU
+		{2B1E2B0B-DAC6-45D5-B355-7A924C78B568}.Release|x64.ActiveCfg = Release|Any CPU
+		{2B1E2B0B-DAC6-45D5-B355-7A924C78B568}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7DE9BB59-4000-42AA-894F-309494434508}
 	EndGlobalSection
 EndGlobal
