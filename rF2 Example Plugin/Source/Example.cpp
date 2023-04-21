@@ -327,10 +327,12 @@ void ExampleInternalsPlugin::UpdateScoring(const ScoringInfoV01& info)
 		//fprintf(fo, "Wind=(%.1f,%.1f,%.1f) MinPathWetness=%.2f MaxPathWetness=%.2f\n", info.mWind.x, info.mWind.y, info.mWind.z, info.mMinPathWetness, info.mMaxPathWetness);
 
 		// Print vehicle info
-		fprintf(fo, "\"drivers\": {\n");
+		fprintf(fo, "\"drivers\": [\n");
 
 		for (long i = 0; i < info.mNumVehicles; ++i)
 		{
+			fprintf(fo, "{\n");
+
 			VehicleScoringInfoV01& vinfo = info.mVehicle[i];
 			fprintf(fo, "\"driverName\":\"%s\",\n", vinfo.mDriverName);
 			fprintf(fo, "\"vehicleName\":\"%s\",\n", vinfo.mVehicleName);
@@ -364,8 +366,9 @@ void ExampleInternalsPlugin::UpdateScoring(const ScoringInfoV01& info)
 			//fprintf(fo, " [%6.3f,%6.3f,%6.3f]\n", vinfo.mOri[2].x, vinfo.mOri[2].y, vinfo.mOri[2].z);
 			//fprintf(fo, " LocalRot=(%.3f,%.3f,%.3f)\n", vinfo.mLocalRot.x, vinfo.mLocalRot.y, vinfo.mLocalRot.z);
 			//fprintf(fo, " LocalRotAccel=(%.2f,%.2f,%.2f)\n", vinfo.mLocalRotAccel.x, vinfo.mLocalRotAccel.y, vinfo.mLocalRotAccel.z);
+			fprintf(fo, "},\n");
 		}
-		fprintf(fo, "}\n");
+		fprintf(fo, "]\n");
 
 		// Delimit sections
 		fprintf(fo, "}\n");
